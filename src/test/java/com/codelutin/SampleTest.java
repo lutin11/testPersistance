@@ -15,11 +15,13 @@ import com.codelutin.app.entities.QualityCriteriaToHAV;
 import com.codelutin.app.entities.QualityCriteriaToHAVTopiaDao;
 import com.codelutin.app.entities.RefQualityCriteria;
 import com.codelutin.app.entities.RefQualityCriteriaTopiaDao;
+import org.apache.commons.collections.CollectionUtils;
 import org.h2.Driver;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.H2Dialect;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -215,10 +217,31 @@ public class SampleTest {
 
         persistenceContext.commit();
 
-        Collection<HarvestingAction> harvestingActions = harvestingActionDao.findAll();
+        List<QualityCriteriaAsso> allQualityCriteriaAsso = new ArrayList<>();
+
+        List<HarvestingAction> harvestingActions = harvestingActionDao.findAll();
+
+        // check every things has been persisted
+        Assert.assertEquals(1, harvestingActions.size());
+        HarvestingAction action = harvestingActions.get(0);
+        Collection<HarvestingActionValorisation> valorisations = action.getValorisations();
+        Assert.assertTrue(CollectionUtils.isNotEmpty(valorisations));
+        for (HarvestingActionValorisation valorisation : valorisations) {
+            if (valorisation.isMain()) {
+                Collection<QualityCriteriaAsso> allQualityCriteriaAssos = valorisation.getQualityCriteriaAsso();
+                Assert.assertTrue(CollectionUtils.isNotEmpty(allQualityCriteriaAssos));
+                allQualityCriteriaAsso.addAll(allQualityCriteriaAssos);
+            }
+        }
+
         harvestingActionDao.deleteAll(harvestingActions);
 
+        // as relation is association, it needs to be manually removed
+        qualityCriteriaAssoDao.deleteAll(allQualityCriteriaAsso);
+
         persistenceContext.commit();
+
+        Assert.assertEquals(0, qualityCriteriaAssoDao.count());
     }
 
     @Ignore
