@@ -180,6 +180,9 @@ public class SampleTest {
 
         persistenceContext.commit();
 
+        Collection<HarvestingActionValorisation> harvestingActionValorisations = harvestingActionValorisationDao.findAll();
+        harvestingActionValorisationDao.deleteAll(harvestingActionValorisations);
+
     }
 
     @Test
