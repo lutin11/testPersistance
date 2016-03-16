@@ -278,7 +278,6 @@ public class SampleTest {
         persistenceContext.commit();
     }
 
-    @Ignore
     @Test
     public void testQualityCriteriaToHAVPersistance() {
 
@@ -300,7 +299,23 @@ public class SampleTest {
 
         persistenceContext.commit();
 
-        Collection<HarvestingAction> harvestingActions = harvestingActionDao.findAll();
+        List<HarvestingAction> harvestingActions = harvestingActionDao.findAll();
+
+        List<QualityCriteriaToHAV> qualityCriteriaToRemove = new ArrayList<>();
+        // check every things has been persisted
+        Assert.assertEquals(1, harvestingActions.size());
+        HarvestingAction action = harvestingActions.get(0);
+        Collection<HarvestingActionValorisation> valorisations = action.getValorisations();
+        Assert.assertTrue(CollectionUtils.isNotEmpty(valorisations));
+        for (HarvestingActionValorisation valorisation : valorisations) {
+            if (valorisation.isMain()) {
+                List<QualityCriteriaToHAV> qualityCriteriaToHAVs1 = qualityCriteriaToHAVDao.forHarvestingActionValorisationEquals(valorisation).findAll();
+                Assert.assertTrue(CollectionUtils.isNotEmpty(qualityCriteriaToHAVs1));
+                qualityCriteriaToRemove.addAll(qualityCriteriaToHAVs1);
+            }
+        }
+        qualityCriteriaToHAVDao.deleteAll(qualityCriteriaToRemove);
+
         harvestingActionDao.deleteAll(harvestingActions);
 
         persistenceContext.commit();
