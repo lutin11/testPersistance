@@ -178,8 +178,8 @@ public class SampleTest {
     @Test
     public void testNoQualityCriteriaPersistance() {
 
-        HarvestingAction persistedHarvestingAction = createHarvestingAction();
-        createNoQualityCriteriaValorisations(persistedHarvestingAction);
+        HarvestingAction harvestingAction = createHarvestingAction();
+        createNoQualityCriteriaValorisations(harvestingAction);
 
         persistenceContext.commit();
 
@@ -193,7 +193,7 @@ public class SampleTest {
     @Test
     public void testAssociationQualityCriteriaPersistance() {
 
-        HarvestingAction persistedHarvestingAction = createHarvestingAction();
+        HarvestingAction harvestingAction = createHarvestingAction();
 
         RefQualityCriteria qualityCriteria0 = createRefQualityCriteria();
 
@@ -213,7 +213,7 @@ public class SampleTest {
         qualityCriteriaAssos.add(binaryQualityCriteriaAsso);
         qualityCriteriaAssos.add(quantitativeQualityCriteriaAsso);
 
-        createQualityCriteriaAssoValorisations(persistedHarvestingAction, qualityCriteriaAssos);
+        createQualityCriteriaAssoValorisations(harvestingAction, qualityCriteriaAssos);
 
         persistenceContext.commit();
 
@@ -248,10 +248,9 @@ public class SampleTest {
     @Test
     public void testAgregateQualityCriteriaPersistance() {
 
-        HarvestingAction persistedHarvestingAction = createHarvestingAction();
+        HarvestingAction harvestingAction = createHarvestingAction();
 
         RefQualityCriteria qualityCriteria0 = createRefQualityCriteria();
-
         QualityCriteriaAgre binaryQualityCriteriaAgre = qualityCriteriaAgreDao.newInstance();
         binaryQualityCriteriaAgre.setBinaryValue(true);
         binaryQualityCriteriaAgre.setRefQualityCriteria(qualityCriteria0);
@@ -268,7 +267,7 @@ public class SampleTest {
         qualityCriteriaAgres.add(binaryQualityCriteriaAgre);
         qualityCriteriaAgres.add(quantitativeQualityCriteriaAgre);
 
-        createQualityCriteriaAgreValorisations(persistedHarvestingAction, qualityCriteriaAgres);
+        createQualityCriteriaAgreValorisations(harvestingAction, qualityCriteriaAgres);
 
         persistenceContext.commit();
 
@@ -281,7 +280,7 @@ public class SampleTest {
     @Test
     public void testQualityCriteriaToHAVPersistance() {
 
-        HarvestingAction persistedHarvestingAction = createHarvestingAction();
+        HarvestingAction harvestingAction = createHarvestingAction();
 
         QualityCriteriaToHAV binaryQualityCriteriaHAV = qualityCriteriaToHAVDao.newInstance();
         binaryQualityCriteriaHAV.setBinaryValue(true);
@@ -295,7 +294,7 @@ public class SampleTest {
         qualityCriteriaToHAVs.add(binaryQualityCriteriaHAV);
         qualityCriteriaToHAVs.add(quantitativeQualityCriteriaHAV);
 
-        createQualityCriteriaToHAV_Valorisations(persistedHarvestingAction, qualityCriteriaToHAVs);
+        createQualityCriteriaToHAV_Valorisations(harvestingAction, qualityCriteriaToHAVs);
 
         persistenceContext.commit();
 
