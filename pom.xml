@@ -1,0 +1,103 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuiton</groupId>
+    <artifactId>chorempom</artifactId>
+    <version>9</version>
+  </parent>
+
+  <groupId>com.company</groupId>
+  <artifactId>my-library-application</artifactId>
+  <packaging>jar</packaging>
+  <version>0.1-SNAPSHOT</version>
+  <name>my-topia-app</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <projectId>topia-sample-project</projectId>
+    <ciViewId>topia-sample-project</ciViewId>
+
+    <!-- license to use  -->
+    <license.licenseName>gpl_v3</license.licenseName>
+
+    <eugeneVersion>2.13</eugeneVersion>
+    <topiaVersion>3.0</topiaVersion>
+
+    <javaVersion>1.8</javaVersion>
+    <signatureArtifactId>java18</signatureArtifactId>
+    <signatureVersion>1.0</signatureVersion>
+
+    <h2Version>1.4.190</h2Version>
+
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuiton.topia</groupId>
+      <artifactId>topia-persistence</artifactId>
+      <version>${topiaVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+      <version>4.11</version>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>${h2Version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.nuiton.eugene</groupId>
+        <artifactId>eugene-maven-plugin</artifactId>
+        <version>${eugeneVersion}</version>
+        <configuration>
+          <inputs>zargo</inputs>
+          <resolver>org.nuiton.util.FasterCachedResourceResolver</resolver>
+        </configuration>
+        <executions>
+          <execution>
+            <id>generate-entities</id>
+            <phase>generate-sources</phase>
+            <configuration>
+              <!-- Corresponding to extracted package from zargo file -->
+              <fullPackagePath>com.company.app.entities</fullPackagePath>
+              <!-- DefaultPackage used for Model classes generation (XxxEntityEnum, XxxTopiaXyz classes, ...)  -->
+              <defaultPackage>com.company.app</defaultPackage>
+              <templates>
+                org.nuiton.eugene.java.JavaInterfaceTransformer,
+                org.nuiton.eugene.java.JavaBeanTransformer,
+                org.nuiton.eugene.java.JavaEnumerationTransformer,
+                org.nuiton.topia.templates.TopiaMetaTransformer
+              </templates>
+            </configuration>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.nuiton.topia</groupId>
+            <artifactId>topia-persistence</artifactId>
+            <version>${topiaVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.nuiton.topia</groupId>
+            <artifactId>topia-templates</artifactId>
+            <version>${topiaVersion}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
+</project>
