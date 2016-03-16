@@ -1,20 +1,20 @@
-package com.company;
+package com.codelutin;
 
-import com.company.app.MyLibraryTopiaApplicationContext;
-import com.company.app.MyLibraryTopiaPersistenceContext;
-import com.company.app.entities.HarvestingAction;
-import com.company.app.entities.HarvestingActionImpl;
-import com.company.app.entities.HarvestingActionTopiaDao;
-import com.company.app.entities.HarvestingActionValorisation;
-import com.company.app.entities.HarvestingActionValorisationTopiaDao;
-import com.company.app.entities.QualityCriteriaAgre;
-import com.company.app.entities.QualityCriteriaAgreTopiaDao;
-import com.company.app.entities.QualityCriteriaAsso;
-import com.company.app.entities.QualityCriteriaAssoTopiaDao;
-import com.company.app.entities.QualityCriteriaToHAV;
-import com.company.app.entities.QualityCriteriaToHAVTopiaDao;
-import com.company.app.entities.RefQualityCriteria;
-import com.company.app.entities.RefQualityCriteriaTopiaDao;
+import com.codelutin.app.TestTopiaPersistanceTopiaApplicationContext;
+import com.codelutin.app.TestTopiaPersistanceTopiaPersistenceContext;
+import com.codelutin.app.entities.HarvestingAction;
+import com.codelutin.app.entities.HarvestingActionImpl;
+import com.codelutin.app.entities.HarvestingActionTopiaDao;
+import com.codelutin.app.entities.HarvestingActionValorisation;
+import com.codelutin.app.entities.HarvestingActionValorisationTopiaDao;
+import com.codelutin.app.entities.QualityCriteriaAgre;
+import com.codelutin.app.entities.QualityCriteriaAgreTopiaDao;
+import com.codelutin.app.entities.QualityCriteriaAsso;
+import com.codelutin.app.entities.QualityCriteriaAssoTopiaDao;
+import com.codelutin.app.entities.QualityCriteriaToHAV;
+import com.codelutin.app.entities.QualityCriteriaToHAVTopiaDao;
+import com.codelutin.app.entities.RefQualityCriteria;
+import com.codelutin.app.entities.RefQualityCriteriaTopiaDao;
 import org.h2.Driver;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.H2Dialect;
@@ -32,11 +32,11 @@ import java.util.UUID;
 
 public class SampleTest {
 
-    protected static MyLibraryTopiaApplicationContext applicationContext;
+    protected static TestTopiaPersistanceTopiaApplicationContext applicationContext;
 
     protected static final Long TEST_RUN_ID = System.currentTimeMillis();
 
-    protected MyLibraryTopiaPersistenceContext persistenceContext;
+    protected TestTopiaPersistanceTopiaPersistenceContext persistenceContext;
 
     protected HarvestingActionTopiaDao harvestingActionDao;
 
@@ -67,7 +67,7 @@ public class SampleTest {
 
         properties.setProperty("topia.persistence.validateSchema", "false");
 
-        applicationContext = new MyLibraryTopiaApplicationContext(properties);
+        applicationContext = new TestTopiaPersistanceTopiaApplicationContext(properties);
     }
 
     @AfterClass

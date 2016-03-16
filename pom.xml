@@ -9,11 +9,11 @@
     <version>9</version>
   </parent>
 
-  <groupId>com.company</groupId>
-  <artifactId>my-library-application</artifactId>
+  <groupId>com.codelutin</groupId>
+  <artifactId>test-persistance-topia</artifactId>
   <packaging>jar</packaging>
   <version>0.1-SNAPSHOT</version>
-  <name>my-topia-app</name>
+  <name>test-persistance-topia</name>
   <url>http://maven.apache.org</url>
 
   <properties>
@@ -70,9 +70,9 @@
             <phase>generate-sources</phase>
             <configuration>
               <!-- Corresponding to extracted package from zargo file -->
-              <fullPackagePath>com.company.app.entities</fullPackagePath>
+              <fullPackagePath>com.codelutin.app.entities</fullPackagePath>
               <!-- DefaultPackage used for Model classes generation (XxxEntityEnum, XxxTopiaXyz classes, ...)  -->
-              <defaultPackage>com.company.app</defaultPackage>
+              <defaultPackage>com.codelutin.app</defaultPackage>
               <templates>
                 org.nuiton.eugene.java.JavaInterfaceTransformer,
                 org.nuiton.eugene.java.JavaBeanTransformer,
