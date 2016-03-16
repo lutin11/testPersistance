@@ -278,6 +278,8 @@ public class SampleTest {
 
         harvestingActionDao.deleteAll(harvestingActions);
 
+        Assert.assertTrue(CollectionUtils.isEmpty(qualityCriteriaAgreDao.findAll()));
+
         persistenceContext.commit();
     }
 
