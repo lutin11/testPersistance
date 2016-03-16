@@ -256,8 +256,6 @@ public class SampleTest {
                 binaryQualityCriteriaAgre.setBinaryValue(true);
                 binaryQualityCriteriaAgre.setRefQualityCriteria(qualityCriteria0);
                 binaryQualityCriteriaAgre.setHarvestingActionValorisation(valorisation);
-
-                binaryQualityCriteriaAgre = qualityCriteriaAgreDao.create(binaryQualityCriteriaAgre);
                 valorisation.addRefQualityCriteriaQualityCriteriaAgre(binaryQualityCriteriaAgre);
             }
         }
