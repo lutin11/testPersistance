@@ -24,7 +24,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -109,7 +108,7 @@ public class SampleTest {
         return  harvestingAction;
     }
 
-    protected void createValorisations(
+    protected Collection<HarvestingActionValorisation> createValorisations(
             HarvestingAction persistedHarvestingAction,
             Collection<QualityCriteriaAsso> qualityCriteriaAssos,
             Collection<QualityCriteriaAgre> qualityCriteriaAgres,
@@ -121,7 +120,6 @@ public class SampleTest {
         mainVal.setSpeciesCode(UUID.randomUUID().toString());
 
         mainVal.setQualityCriteriaAsso(qualityCriteriaAssos);
-        mainVal.setRefQualityCriteriaQualityCriteriaAgre(qualityCriteriaAgres);
 
         mainVal = harvestingActionValorisationDao.create(mainVal);
 
@@ -139,6 +137,7 @@ public class SampleTest {
         speciesVal = harvestingActionValorisationDao.create(speciesVal);
 
         valorisations.add(speciesVal);
+        return valorisations;
     }
 
 
@@ -153,11 +152,10 @@ public class SampleTest {
         createValorisations(persistedHarvestingAction, qualityCriteriaAssos, null, null);
     }
 
-    protected void createQualityCriteriaAgreValorisations(
-            HarvestingAction persistedHarvestingAction,
-            Collection<QualityCriteriaAgre> qualityCriteriaAgres) {
-        createValorisations(persistedHarvestingAction, null, qualityCriteriaAgres, null);
-
+    protected Collection<HarvestingActionValorisation> createQualityCriteriaAgreValorisations(
+            HarvestingAction persistedHarvestingAction) {
+        Collection<HarvestingActionValorisation> valorisations = createValorisations(persistedHarvestingAction, null, null, null);
+        return valorisations;
     }
 
     protected void createQualityCriteriaToHAV_Valorisations(
@@ -244,34 +242,42 @@ public class SampleTest {
         Assert.assertEquals(0, qualityCriteriaAssoDao.count());
     }
 
-    @Ignore
     @Test
     public void testAgregateQualityCriteriaPersistance() {
 
         HarvestingAction harvestingAction = createHarvestingAction();
 
         RefQualityCriteria qualityCriteria0 = createRefQualityCriteria();
-        QualityCriteriaAgre binaryQualityCriteriaAgre = qualityCriteriaAgreDao.newInstance();
-        binaryQualityCriteriaAgre.setBinaryValue(true);
-        binaryQualityCriteriaAgre.setRefQualityCriteria(qualityCriteria0);
 
-        binaryQualityCriteriaAgre = qualityCriteriaAgreDao.create(binaryQualityCriteriaAgre);
+        Collection<HarvestingActionValorisation> valorisations = createQualityCriteriaAgreValorisations(harvestingAction);;
+        for (HarvestingActionValorisation valorisation : valorisations) {
+            if (valorisation.isMain()) {
+                QualityCriteriaAgre binaryQualityCriteriaAgre = qualityCriteriaAgreDao.newInstance();
+                binaryQualityCriteriaAgre.setBinaryValue(true);
+                binaryQualityCriteriaAgre.setRefQualityCriteria(qualityCriteria0);
+                binaryQualityCriteriaAgre.setHarvestingActionValorisation(valorisation);
 
-        QualityCriteriaAgre quantitativeQualityCriteriaAgre = qualityCriteriaAgreDao.newInstance();
-        quantitativeQualityCriteriaAgre.setQuantitativeValue(20.5);
-        quantitativeQualityCriteriaAgre.setRefQualityCriteria(qualityCriteria0);
-
-        quantitativeQualityCriteriaAgre = qualityCriteriaAgreDao.create(quantitativeQualityCriteriaAgre);
-
-        List<QualityCriteriaAgre> qualityCriteriaAgres = new ArrayList<>();
-        qualityCriteriaAgres.add(binaryQualityCriteriaAgre);
-        qualityCriteriaAgres.add(quantitativeQualityCriteriaAgre);
-
-        createQualityCriteriaAgreValorisations(harvestingAction, qualityCriteriaAgres);
+                binaryQualityCriteriaAgre = qualityCriteriaAgreDao.create(binaryQualityCriteriaAgre);
+                valorisation.addRefQualityCriteriaQualityCriteriaAgre(binaryQualityCriteriaAgre);
+            }
+        }
 
         persistenceContext.commit();
 
-        Collection<HarvestingAction> harvestingActions = harvestingActionDao.findAll();
+        List<HarvestingAction> harvestingActions = harvestingActionDao.findAll();
+
+        Assert.assertEquals(1, harvestingActions.size());
+        HarvestingAction action = harvestingActions.get(0);
+
+        Collection<HarvestingActionValorisation> actionValorisations = action.getValorisations();
+        Assert.assertTrue(CollectionUtils.isNotEmpty(actionValorisations));
+        for (HarvestingActionValorisation valorisation : actionValorisations) {
+            if (valorisation.isMain()) {
+                Collection<QualityCriteriaAgre> valorisationQualityCriteriaAgres = valorisation.getRefQualityCriteriaQualityCriteriaAgre();
+                Assert.assertTrue(CollectionUtils.isNotEmpty(valorisationQualityCriteriaAgres));
+            }
+        }
+
         harvestingActionDao.deleteAll(harvestingActions);
 
         persistenceContext.commit();
