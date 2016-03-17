@@ -25,6 +25,7 @@
 
     <eugeneVersion>2.13</eugeneVersion>
     <topiaVersion>3.0</topiaVersion>
+    <hibernateVersion>4.3.11.Final</hibernateVersion>
 
     <javaVersion>1.8</javaVersion>
     <signatureArtifactId>java18</signatureArtifactId>
@@ -51,6 +52,17 @@
       <artifactId>h2</artifactId>
       <version>${h2Version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>${hibernateVersion}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-c3p0</artifactId>
+      <version>${hibernateVersion}</version>
     </dependency>
   </dependencies>
 

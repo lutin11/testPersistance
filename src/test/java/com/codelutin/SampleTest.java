@@ -7,12 +7,15 @@ import com.codelutin.app.entities.HarvestingActionImpl;
 import com.codelutin.app.entities.HarvestingActionTopiaDao;
 import com.codelutin.app.entities.HarvestingActionValorisation;
 import com.codelutin.app.entities.HarvestingActionValorisationTopiaDao;
+import com.codelutin.app.entities.HarvestingYealdTopiaDao;
 import com.codelutin.app.entities.QualityCriteriaAgre;
 import com.codelutin.app.entities.QualityCriteriaAgreTopiaDao;
 import com.codelutin.app.entities.QualityCriteriaAsso;
 import com.codelutin.app.entities.QualityCriteriaAssoTopiaDao;
 import com.codelutin.app.entities.QualityCriteriaToHAV;
 import com.codelutin.app.entities.QualityCriteriaToHAVTopiaDao;
+import com.codelutin.app.entities.RefDestination;
+import com.codelutin.app.entities.RefDestinationTopiaDao;
 import com.codelutin.app.entities.RefQualityCriteria;
 import com.codelutin.app.entities.RefQualityCriteriaTopiaDao;
 import org.apache.commons.collections.CollectionUtils;
@@ -52,6 +55,10 @@ public class SampleTest {
 
     protected QualityCriteriaToHAVTopiaDao qualityCriteriaToHAVDao;
 
+    protected RefDestinationTopiaDao refDestinationDao;
+
+    protected HarvestingYealdTopiaDao harvestingYealdDao;
+
     @BeforeClass
     public static void createApplicationContext() {
         Properties properties = new Properties();
@@ -61,7 +68,7 @@ public class SampleTest {
         String base = "tests_" + TEST_RUN_ID;
         String result = String.format("%s", base);
         String jdbcUrl = "jdbc:h2:mem:" + result + ";DB_CLOSE_DELAY=-1";
-
+        properties.setProperty(Environment.SHOW_SQL, "true");
         properties.setProperty(Environment.URL, jdbcUrl);
         properties.setProperty(Environment.USER, "sa");
         properties.setProperty(Environment.PASS, "");
@@ -86,6 +93,18 @@ public class SampleTest {
         qualityCriteriaAgreDao = persistenceContext.getQualityCriteriaAgreDao();
         qualityCriteriaAssoDao = persistenceContext.getQualityCriteriaAssoDao();
         qualityCriteriaToHAVDao = persistenceContext.getQualityCriteriaToHAVDao();
+        refDestinationDao = persistenceContext.getRefDestinationDao();
+        harvestingYealdDao = persistenceContext.getHarvestingYealdDao();
+
+        refDestinationDao.create(
+                RefDestination.PROPERTY_ACTIVE, true,
+                RefDestination.PROPERTY_ESPECE, "espece0"
+        );
+
+        refDestinationDao.create(
+                RefDestination.PROPERTY_ACTIVE, true,
+                RefDestination.PROPERTY_ESPECE, "espece1"
+        );
     }
 
     @After
@@ -111,13 +130,15 @@ public class SampleTest {
     protected Collection<HarvestingActionValorisation> createValorisations(
             HarvestingAction persistedHarvestingAction,
             Collection<QualityCriteriaAsso> qualityCriteriaAssos,
-            Collection<QualityCriteriaAgre> qualityCriteriaAgres,
             Collection<QualityCriteriaToHAV> qualityCriteriaToHAVs) {
+
+        List<RefDestination> destinations = refDestinationDao.findAll();
 
         Collection<HarvestingActionValorisation> valorisations = persistedHarvestingAction.getValorisations();
         HarvestingActionValorisation mainVal = harvestingActionValorisationDao.newInstance();
         mainVal.setMain(true);
         mainVal.setSpeciesCode(UUID.randomUUID().toString());
+        mainVal.setDestination(destinations.get(0));
 
         mainVal.setQualityCriteriaAsso(qualityCriteriaAssos);
 
@@ -143,25 +164,25 @@ public class SampleTest {
 
     protected void createNoQualityCriteriaValorisations(
             HarvestingAction persistedHarvestingAction) {
-        createValorisations(persistedHarvestingAction, null, null, null);
+        createValorisations(persistedHarvestingAction, null, null);
     }
 
     protected void createQualityCriteriaAssoValorisations(
             HarvestingAction persistedHarvestingAction,
             Collection<QualityCriteriaAsso> qualityCriteriaAssos) {
-        createValorisations(persistedHarvestingAction, qualityCriteriaAssos, null, null);
+        createValorisations(persistedHarvestingAction, qualityCriteriaAssos, null);
     }
 
     protected Collection<HarvestingActionValorisation> createQualityCriteriaAgreValorisations(
             HarvestingAction persistedHarvestingAction) {
-        Collection<HarvestingActionValorisation> valorisations = createValorisations(persistedHarvestingAction, null, null, null);
+        Collection<HarvestingActionValorisation> valorisations = createValorisations(persistedHarvestingAction, null, null);
         return valorisations;
     }
 
     protected void createQualityCriteriaToHAV_Valorisations(
             HarvestingAction persistedHarvestingAction,
             Collection<QualityCriteriaToHAV> qualityCriteriaToHAVs) {
-        createValorisations(persistedHarvestingAction, null, null, qualityCriteriaToHAVs);
+        createValorisations(persistedHarvestingAction, null, qualityCriteriaToHAVs);
 
     }
 
@@ -240,6 +261,8 @@ public class SampleTest {
         persistenceContext.commit();
 
         Assert.assertEquals(0, qualityCriteriaAssoDao.count());
+
+        persistenceContext.commit();
     }
 
     @Test
@@ -267,7 +290,7 @@ public class SampleTest {
         Assert.assertEquals(1, harvestingActions.size());
         HarvestingAction action = harvestingActions.get(0);
 
-        Collection<HarvestingActionValorisation> actionValorisations = action.getValorisations();
+        List<HarvestingActionValorisation> actionValorisations = action.getValorisations();
         Assert.assertTrue(CollectionUtils.isNotEmpty(actionValorisations));
         for (HarvestingActionValorisation valorisation : actionValorisations) {
             if (valorisation.isMain()) {
@@ -278,9 +301,13 @@ public class SampleTest {
 
         harvestingActionDao.deleteAll(harvestingActions);
 
+        persistenceContext.commit();
+
         Assert.assertTrue(CollectionUtils.isEmpty(qualityCriteriaAgreDao.findAll()));
 
         persistenceContext.commit();
+
+        System.out.print("Fin");
     }
 
     @Test
@@ -321,10 +348,11 @@ public class SampleTest {
         }
         qualityCriteriaToHAVDao.deleteAll(qualityCriteriaToRemove);
 
+        persistenceContext.commit();
+
         harvestingActionDao.deleteAll(harvestingActions);
 
         persistenceContext.commit();
-
     }
 
 }
